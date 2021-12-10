@@ -2,6 +2,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import pandas as pd
+import smtplib
+import os
 
 
 
@@ -43,6 +45,36 @@ def parse_video(video):
   }
 
 
+def send_email(body):
+
+    try:
+      server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+      server_ssl.ehlo()
+      
+      SENDER_EMAIL = 'panneh8725@gmail.com'
+      RECEIVER_EMAIL = 'panneh8725@gmail.com'
+      SENDER_PW = os.environ['GMAIL_PW']
+      
+
+      subject = 'Test Msg from Replit'
+      body = 'Hey, this is a test from Replit'
+
+      email_text = f"""
+      From: {SENDER_EMAIL}
+      To: {RECEIVER_EMAIL}
+      Subject: {subject}
+
+      {body}
+
+      """ 
+      server_ssl.login(SENDER_EMAIL, SENDER_PW)
+      server_ssl.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, email_text)
+      server_ssl.close() 
+
+    except:
+      print ('Something went wrong...')
+
+
 if __name__ == "__main__":
   print('Creating driver')
   driver = get_driver()
@@ -61,3 +93,6 @@ if __name__ == "__main__":
   videos_df = pd.DataFrame(videos_data)
   print(videos_df)
   videos_df.to_csv('trending.csv', index=None)
+
+  print("Send an email with the results")
+  send_email(body)
